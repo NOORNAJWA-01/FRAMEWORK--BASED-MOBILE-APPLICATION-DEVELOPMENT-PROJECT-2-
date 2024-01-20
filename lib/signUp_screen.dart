@@ -50,11 +50,10 @@ class _signUpScreenState extends State<signUpScreen> {
         // Sign-up successful, navigate to the home screen or perform any desired action
         Navigator.pushNamed(context, '/login');
       } else {
-        // Sign-up failed, handle the error (you might want to show an error message)
+        // Sign-up failed, handle the error 
         print('Failed to sign up. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      // Handle network or other errors
       print('Error during sign up: $error');
     }
   }
