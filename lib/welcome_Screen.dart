@@ -88,7 +88,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
                     height: height * 0.02,
                   ),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    //Bukak row sebab nak letak sign up sebelah dia
                     Text(
                       "Don't have account?",
                       style: GoogleFonts.lexend(
