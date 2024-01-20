@@ -15,7 +15,9 @@ class EnrollmentCourse extends StatefulWidget {
 class _EnrollmentCourseState extends State<EnrollmentCourse> {
   List<Map<String, dynamic>> enrollments = [];
 
+  // Fetch enrolled courses for the current user
   Future<void> fetchEnrollments() async {
+    // function fetchEnrollments to retrieve enrolled course data for the current user.
     try {
       final response = await http.get(
         Uri.https(
@@ -24,14 +26,17 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
         ),
       );
 
+      // Check the response status
       if (response.statusCode == 200) {
         final Map<String, dynamic>? data = json.decode(response.body);
 
+        // Check if data is not null
         if (data != null) {
           List<Map<String, dynamic>> userEnrollments = [];
           data.forEach((key, value) {
             final enrollmentData = value as Map<String, dynamic>;
 
+            // Check if the enrollment belongs to the current user
             if (enrollmentData['username'] == widget.username) {
               userEnrollments.add({
                 'id': key,
@@ -41,7 +46,7 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
               });
             }
           });
-
+          // Update the state with the fetched enrollments
           setState(() {
             enrollments = userEnrollments;
           });
@@ -51,13 +56,11 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
       }
     } catch (error) {
       print('Error fetching enrollments: $error');
-      // Handle error gracefully, e.g., show an error message to the user
     }
   }
 
   Future<void> _deleteEnrollment(Map<String, dynamic> enrollment) async {
     try {
-      // Perform deletion logic here, e.g., make a DELETE request
       final enrollmentId = enrollment[
           'id']; // Assuming you have an 'id' field in your enrollments
       final url = Uri.https(
@@ -85,7 +88,6 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
       }
     } catch (error) {
       print('Error deleting enrollment: $error');
-      // Handle error gracefully, e.g., show an error message to the user
     }
   }
 
@@ -108,47 +110,46 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
             fit: BoxFit.cover,
           ),
         ),
+
+        // to display the enrolled courses
         child: ListView.builder(
           itemCount: enrollments.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.all(40.0),
-              child: Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 163, 147, 147),
-                    borderRadius: BorderRadius.circular(15.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 163, 147, 147),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: ListTile(
+                  title: Row(
+                    children: [
+                      Icon(Icons.school), // Book icon
+                      SizedBox(width: 10.0),
+                      Text(enrollments[index]['courseName']),
+                    ],
                   ),
-                  child: ListTile(
-                    title: Row(
-                      children: [
-                        Icon(Icons.school), // Book icon
-                        SizedBox(width: 10.0),
-                        Text(enrollments[index]['courseName']),
-                      ],
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Lecturer: ${enrollments[index]['lecturerName']}'),
-                        Text(
-                            'Credit Hours: ${enrollments[index]['creditHour']}'),
-                        SizedBox(height: 10.0),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            _viewSchedule(enrollments[index]);
-                          },
-                          icon: Icon(Icons.remove_red_eye_rounded),
-                          label: Text('View Schedule'),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            _deleteEnrollment(enrollments[index]);
-                          },
-                          icon: Icon(Icons.delete),
-                        ),
-                      ],
-                    ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Lecturer: ${enrollments[index]['lecturerName']}'),
+                      Text('Credit Hours: ${enrollments[index]['creditHour']}'),
+                      SizedBox(height: 10.0),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          _viewSchedule(enrollments[index]);
+                        },
+                        icon: Icon(Icons.remove_red_eye_rounded),
+                        label: Text('View Schedule'),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _deleteEnrollment(enrollments[index]);
+                        },
+                        icon: Icon(Icons.delete),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -156,79 +157,6 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showEnrollmentForm(context);
-        },
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _showEnrollmentForm(BuildContext context) {
-    TextEditingController courseNameController = TextEditingController();
-    TextEditingController lecturerNameController = TextEditingController();
-    TextEditingController creditHourController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Enrollment Form'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Enter enrollment details here...'),
-              Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: courseNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Course Name',
-                        // Add validation if needed
-                      ),
-                    ),
-                    TextFormField(
-                      controller: lecturerNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Lecturer Name',
-                        // Add validation if needed
-                      ),
-                    ),
-                    TextFormField(
-                      controller: creditHourController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Credit Hour',
-                        // Add validation if needed
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _handleEnrollment(
-                  courseNameController.text,
-                  lecturerNameController.text,
-                  creditHourController.text,
-                );
-              },
-              child: Text('Enroll'),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -247,55 +175,5 @@ class _EnrollmentCourseState extends State<EnrollmentCourse> {
     super.initState();
     fetchEnrollments();
   }
-
-  Future<void> _handleEnrollment(
-    String courseName,
-    String lecturerName,
-    String creditHour,
-  ) async {
-    try {
-      if (courseName.isNotEmpty &&
-          lecturerName.isNotEmpty &&
-          creditHour.isNotEmpty &&
-          int.tryParse(creditHour) != null) {
-        final url = Uri.https(
-          'smartstudyhub-36264-default-rtdb.asia-southeast1.firebasedatabase.app',
-          'enrollments.json',
-        );
-
-        final response = await http.post(
-          url,
-          body: json.encode({
-            'username': widget.username,
-            'courseName': courseName,
-            'lecturerName': lecturerName,
-            'creditHour': int.parse(creditHour),
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Enrollment Successful!'),
-            ),
-          );
-          fetchEnrollments();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to enroll. Please try again.'),
-            ),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please fill in all fields correctly!'),
-          ),
-        );
-      }
-    } catch (error) {
-      print('Error handling enrollment: $error');
-    }
-  }
 }
+
