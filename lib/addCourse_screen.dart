@@ -71,7 +71,7 @@ class _AddCourseState extends State<addCourse> {
     String classVenue,
   ) async {
     try {
-      // Perform validation and enrollment logic here
+      //validation and enrollment logic 
       if (courseName.isNotEmpty &&
           lecturerName.isNotEmpty &&
           creditHour.isNotEmpty &&
@@ -101,8 +101,7 @@ class _AddCourseState extends State<addCourse> {
               content: Text('Enrollment Successful!'),
             ),
           );
-
-          // Fetch the courses again after adding a new one
+          
           await fetchCourses();
         } else {
           // Failed to enroll, show an error message
@@ -113,7 +112,7 @@ class _AddCourseState extends State<addCourse> {
           );
         }
       } else {
-        // Show an error message or handle validation
+        // Show an error message 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Please fill in all fields correctly!'),
@@ -146,14 +145,12 @@ class _AddCourseState extends State<addCourse> {
                       controller: courseNameController,
                       decoration: InputDecoration(
                         labelText: 'Course Name',
-                        // Add validation if needed
                       ),
                     ),
                     TextFormField(
                       controller: lecturerNameController,
                       decoration: InputDecoration(
                         labelText: 'Lecturer Name',
-                        // Add validation if needed
                       ),
                     ),
                     TextFormField(
@@ -161,7 +158,6 @@ class _AddCourseState extends State<addCourse> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Credit Hour',
-                        // Add validation if needed
                       ),
                     ),
                   ],
@@ -182,7 +178,7 @@ class _AddCourseState extends State<addCourse> {
                   courseNameController.text,
                   lecturerNameController.text,
                   creditHourController.text,
-                  '', // Add the appropriate values for classDay, classTime, and classVenue
+                  '', 
                   '',
                   '',
                 );
